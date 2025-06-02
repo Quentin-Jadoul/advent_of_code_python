@@ -21,24 +21,35 @@ def parse_input():
 
 
 def part1(data):
-    return sum(
-        (digits := [int(i) for i in line if i.isdigit()]) * 10 + digits[-1]
-        for line in data
-    )
+    """Return the sum of the calibration values for all lines."""
+    total = 0
+    for line in data:
+        digits = [int(i) for i in line if i.isdigit()]
+        if digits:
+            total += digits[0] * 10 + digits[-1]
+    return total
 
 
 def part2(data):
+    """Handle spelled-out digits before computing calibration values."""
     mappings = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
-new_data = []
-for line in data:
-    transformed_line = []
-    for i in range(len(line)):
-        x = "".join([str(idx) for idx, val in enumerate(mappings, 1) if line[i:].startswith(val)])
-        if x:
-            transformed_line.append(x)
-        else:
-            transformed_line.append(line[i])
-    new_data.append("".join(transformed_line))
+    new_data = []
+    for line in data:
+        transformed_line = []
+        i = 0
+        while i < len(line):
+            match = ""
+            for idx, val in enumerate(mappings, 1):
+                if line[i:].startswith(val):
+                    match = str(idx)
+                    break
+            if match:
+                transformed_line.append(match)
+                i += len(mappings[int(match)-1])
+            else:
+                transformed_line.append(line[i])
+                i += 1
+        new_data.append("".join(transformed_line))
 
     return part1(new_data)
 
